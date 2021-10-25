@@ -8,25 +8,22 @@ import (
 	"strconv"
 )
 
-type EnvArgs struct {
-	bindAddr string
-	symbol   string
-	ndays    int
-	apikey   string
-}
+var (
+	bindAddr  = os.Getenv("BIND_ADDR")
+	symbol    = os.Getenv("SYMBOL")
+	ndays_str = os.Getenv("NDAYS")
+)
+var ndays int
 
-func getEnvArgs() *EnvArgs {
-	bindAddr := os.Getenv("BIND_ADDR")
+func init() {
 	if bindAddr == "" {
 		bindAddr = ":8080"
 	}
 
-	symbol := os.Getenv("SYMBOL")
 	if symbol == "" {
 		panic("The SYMBOL environment variable must be set")
 	}
 
-	ndays_str := os.Getenv("NDAYS")
 	if ndays_str == "" {
 		panic("The NDAYS environment variable must be set")
 	}
@@ -35,13 +32,6 @@ func getEnvArgs() *EnvArgs {
 		fmt.Errorf("Invalid value for NDAYS: %v", ndays)
 		panic("The NDAYS environment variable must be a valid integer")
 	}
-
-	apikey := os.Getenv("APIKEY")
-	if apikey == "" {
-		panic("The APIKEY environment variable must be set")
-	}
-
-	return &EnvArgs{bindAddr: bindAddr, symbol: symbol, ndays: ndays, apikey: apikey}
 }
 
 type ApiResponse struct {
@@ -69,14 +59,13 @@ func mean(xs []float64) float64 {
 }
 
 func main() {
-	args := getEnvArgs()
-
-	log.Printf("Starting web server on %s", args.bindAddr)
+	log.Printf("Starting web server on %s", bindAddr)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		data := createApiResponse(args.symbol, args.ndays)
+		log.Printf("Handling request")
+		data := createApiResponse(symbol, ndays)
 		fmt.Fprintf(w, "%s, data=%v, average=%.2f", data.symbol, data.data, data.average)
 	})
 
-	log.Fatal(http.ListenAndServe(args.bindAddr, nil))
+	log.Fatal(http.ListenAndServe(bindAddr, nil))
 }

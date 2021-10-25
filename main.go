@@ -71,7 +71,16 @@ func main() {
 	log.Printf("Starting web server on %s", args.BindAddr)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Handling request")
+		// return 404 for requests to other paths, mainly to avoid spamming the alphavantage API
+		// when the browser requests favicon.ico
+		if r.URL.Path != "/" {
+			log.Printf("Not found: %s %s", r.Method, r.URL.Path)
+			w.WriteHeader(404)
+			fmt.Fprintf(w, "404 not found")
+			return
+		}
+
+		log.Printf("%s %s", r.Method, r.URL.Path)
 
 		data := createApiResponse(args.Symbol, args.Ndays)
 

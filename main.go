@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/pushittoprod/stock-quotes/alphavantage"
 )
 
 var (
@@ -28,6 +30,7 @@ func init() {
 		panic("The NDAYS environment variable must be set")
 	}
 	ndays, err := strconv.Atoi(ndays_str)
+	log.Printf("ndays_str=%s, ndays=%d", ndays_str, ndays)
 	if err != nil {
 		fmt.Errorf("Invalid value for NDAYS: %v", ndays)
 		panic("The NDAYS environment variable must be a valid integer")
@@ -41,7 +44,7 @@ type ApiResponse struct {
 }
 
 func createApiResponse(symbol string, ndays int) *ApiResponse {
-	data := []float64{110.56, 111.25, 115.78}
+	data := alphavantage.GetClosingData(symbol, ndays)
 	average := mean(data)
 	return &ApiResponse{
 		symbol:  symbol,
@@ -63,6 +66,7 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Handling request")
+		log.Printf("Getting %d days of data for %s", ndays, symbol)
 		data := createApiResponse(symbol, ndays)
 		fmt.Fprintf(w, "%s, data=%v, average=%.2f", data.symbol, data.data, data.average)
 	})

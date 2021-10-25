@@ -10,31 +10,37 @@ import (
 	"github.com/pushittoprod/stock-quotes/alphavantage"
 )
 
-var (
-	bindAddr  = os.Getenv("BIND_ADDR")
-	symbol    = os.Getenv("SYMBOL")
-	ndays_str = os.Getenv("NDAYS")
-)
-var ndays int
+type EnvArgs struct {
+	BindAddr string
+	Symbol   string
+	Ndays    int
+}
+
+var args EnvArgs
 
 func init() {
+	bindAddr := os.Getenv("BIND_ADDR")
 	if bindAddr == "" {
 		bindAddr = ":8080"
 	}
+	args.BindAddr = bindAddr
 
+	symbol := os.Getenv("SYMBOL")
 	if symbol == "" {
 		panic("The SYMBOL environment variable must be set")
 	}
+	args.Symbol = symbol
 
-	if ndays_str == "" {
+	ndaysStr := os.Getenv("NDAYS")
+	if ndaysStr == "" {
 		panic("The NDAYS environment variable must be set")
 	}
-	ndays, err := strconv.Atoi(ndays_str)
-	log.Printf("ndays_str=%s, ndays=%d", ndays_str, ndays)
+
+	ndays, err := strconv.Atoi(ndaysStr)
 	if err != nil {
-		fmt.Errorf("Invalid value for NDAYS: %v", ndays)
 		panic("The NDAYS environment variable must be a valid integer")
 	}
+	args.Ndays = ndays
 }
 
 type ApiResponse struct {
@@ -62,14 +68,19 @@ func mean(xs []float64) float64 {
 }
 
 func main() {
-	log.Printf("Starting web server on %s", bindAddr)
+	log.Printf("Starting web server on %s", args.BindAddr)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Handling request")
-		log.Printf("Getting %d days of data for %s", ndays, symbol)
-		data := createApiResponse(symbol, ndays)
-		fmt.Fprintf(w, "%s, data=%v, average=%.2f", data.symbol, data.data, data.average)
+
+		data := createApiResponse(args.Symbol, args.Ndays)
+
+		fmt.Fprintf(w, "%s data=[%.2f", data.symbol, data.data[0])
+		for _, price := range data.data {
+			fmt.Fprintf(w, ", %.2f", price)
+		}
+		fmt.Fprintf(w, "], average=%.2f", data.average)
 	})
 
-	log.Fatal(http.ListenAndServe(bindAddr, nil))
+	log.Fatal(http.ListenAndServe(args.BindAddr, nil))
 }

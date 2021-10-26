@@ -7,6 +7,11 @@ if ! which minikube &>/dev/null; then
   exit 1
 fi
 
+if ! which curl &>/dev/null; then
+  echo "error: curl is not installed or is not on the path" >&2
+  exit 1
+fi
+
 if [[ ! -f deployment.yml ]]; then
   echo "error: can't find deployment.yml. ensure you're running in the correct directory" >&2
   exit 1

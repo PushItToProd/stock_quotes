@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  quotes:
+    build: .
+    ports:
+    - "8080:8080"
+    environment:
+      SYMBOL: MSFT
+      NDAYS: 7
+      APIKEY: demo

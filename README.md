@@ -60,12 +60,23 @@ Run `make` to run the tests and start the app using Go.
 * `make docker-down` stops the Docker service and cleans up the image builds.
 * `make docker-down-all` stops the Docker service and cleans up the 
 
-Kubernetes deployment
----------------------
+Kubernetes deployment with minikube
+-----------------------------------
 
-- install minikube
-- `minikube start`
-- `minikube addons enable ingress`
+Deployment has been validated with minikube v1.23.2 and kubectl v1.22 on Pop_OS!
+20.04 LTS.
+
+### Pre-requisites
+
+- minikube
+- kubectl
+
+Install instructions for both tools can be found [here](https://kubernetes.io/docs/tasks/tools/).
+
+### Deployment
+
+- Run `minikube start --addons ingress` if you don't already have a minikube cluster.
+- Run `minikube addons enable ingress` if you have a cluster running and are okay using it.
 - create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
 - `make kube-apply`
 - wait for a bit

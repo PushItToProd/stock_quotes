@@ -1,3 +1,7 @@
+# Kubernetes configuration
+# Prerequisites: you must configure a secret named stock-quotes-secret with an
+# entry named APIKEY containing your Alpha Vantage API key.
+
 # Reference: https://www.digitalocean.com/community/tutorials/how-to-deploy-resilient-go-app-digitalocean-kubernetes
 # TODO: put these in a stock-quotes namespace
 ---

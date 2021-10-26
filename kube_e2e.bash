@@ -21,7 +21,7 @@ else
 fi
 
 echo "** Starting minikube cluster with profile $PROFILE"
-minikube start --addons ingress --profile="$PROFILE"
+minikube start --memory=2G --cpus=1 --addons ingress --profile="$PROFILE"
 
 # Automatically clean up when we're done.
 cleanup() {

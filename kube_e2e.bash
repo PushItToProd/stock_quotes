@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Validate the k8s deployment on a fresh minikube cluster.
+# Validate the k8s deployment on a fresh minikube cluster to ensure this is
+# repeatable.
 
 if ! which minikube &>/dev/null; then
   echo "error: minikube is not installed or is not on the path" >&2
@@ -11,14 +12,18 @@ if [[ ! -f deployment.yml ]]; then
   exit 1
 fi
 
-: "${PROFILE:=stock-quotes-e2e-test}"
+if [[ ! "$PROFILE" ]]; then
+  PROFILE=stock-quotes-e2e-test
+  echo "** Using default profile $PROFILE"
+else
+  echo "** Using provided PROFILE=$PROFILE -- this will not be cleaned up"
+  SKIP_CLEANUP=1
+fi
 
-echo "** Starting minikube cluster"
+echo "** Starting minikube cluster with profile $PROFILE"
 minikube start --addons ingress --profile="$PROFILE"
 
-# echo "** Enabling ingress"
-# minikube --profile="$PROFILE" addons enable ingress
-
+# Automatically clean up when we're done.
 cleanup() {
   # only clean up the cluster if it's not the default
   if [[ "$SKIP_CLEANUP" == 1 ]]; then
@@ -93,4 +98,4 @@ if [[ ! "$success" ]]; then
 fi
 
 echo "successfully connected -- e2e test complete"
-echo "** Final output: $(curl -H 'Host: stock-quotes.get' "http://$ip/")"
+echo "** Final output: $(curl --silent --output /dev/stdout -H 'Host: stock-quotes.get' "http://$ip/")"

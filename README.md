@@ -107,6 +107,6 @@ set or manually with `minikube delete --profile=stock-quotes-e2e-test`.
 - Run `minikube addons enable ingress` if you have a default minikube cluster and want to use it.
 - Create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
 - Deploy the resources using `kubectl apply -f deployment.yml`
-  - If you just spun up minikube, you might get an error like `Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": context deadline exceeded`. In this case, wait and re-run the apply.
+  - If you just spun up minikube, you might get an error like `Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": context deadline exceeded`. In this case, the Ingress Controller probably isn't ready. Wait 30-60 seconds and re-run the apply.
 - Run `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/` to check the service connects. You might have to retry a few times to validate.
 - Remove the created resources using `kubectl delete -f deployment.yml`

@@ -98,12 +98,10 @@ also provide it via the environment variable `APIKEY`.
 APIKEY=demo bash kube_e2e.bash
 ```
 
-By default, the script tears down the cluster as soon as the deployment is
-validated. To prevent this, you can set the environment variable
-`SKIP_CLEANUP=1`. Note that you will need to use 
-`kubectl --context=stock-quotes-e2e-test` or 
-`minikube --profile=stock-quotes-e2e-test` to interact with the temporary 
-cluster.
+By default, the script tears down the cluster upon completion. To prevent this,
+you can set the environment variable `SKIP_CLEANUP=1`. Note that you will need
+to use `kubectl --context=stock-quotes-e2e-test` or `minikube
+--profile=stock-quotes-e2e-test` to interact with the temporary cluster.
 
 ```
 SKIP_CLEANUP=1 bash kube_e2e.bash

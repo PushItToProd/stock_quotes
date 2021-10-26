@@ -75,9 +75,38 @@ Install instructions for both tools can be found [here](https://kubernetes.io/do
 
 ### Deployment
 
+The script `kube_e2e.bash` uses Minikube to spin up a new cluster, install the
+Ingress addon, configure the secret, deploy the necessary resources for the app,
+and validate the app starts successfully.
+
+```
+bash kube_e2e.bash
+```
+
+This script will prompt for your Alpha Vantage API key while running. You can
+also provide it via the environment variable `APIKEY`.
+
+```
+APIKEY=demo bash kube_e2e.bash
+```
+
+By default, the script tears down the cluster as soon as the deployment is
+validated. To prevent this, you can set the environment variable
+`SKIP_CLEANUP=1`.
+
+```
+SKIP_CLEANUP=1 bash kube_e2e.bash
+```
+
+The cluster can be torn down by running the script again without `SKIP_CLEANUP`
+set or manually with `minikube delete --profile=stock-quotes-e2e-test`.
+
+### Manual deployment steps
+
 - Run `minikube start --addons ingress` if you don't already have a minikube cluster.
-- Run `minikube addons enable ingress` if you have a cluster running and are okay using it.
-- create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
-- `make kube-apply`
-- wait for a bit
-- `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/`
+- Run `minikube addons enable ingress` if you have a default minikube cluster and want to use it.
+- Create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
+- Deploy the resources using `kubectl apply -f deployment.yml`
+  - If you just spun up minikube, you might get an error like `Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": context deadline exceeded`. In this case, wait and re-run the apply.
+- Run `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/` to check the service connects. You might have to retry a few times to validate.
+- Remove the created resources using `kubectl delete -f deployment.yml`

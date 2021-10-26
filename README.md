@@ -66,6 +66,9 @@ Kubernetes deployment with minikube
 Deployment has been validated with minikube v1.23.2 and kubectl v1.22 on Pop_OS!
 20.04 LTS.
 
+The Kubernetes configuration lives under `deployment.yml`. As described below,
+the secret `stock-quotes-secret` must be created for deployment to succeed.
+
 ### Pre-requisites
 
 - minikube
@@ -76,9 +79,10 @@ Install instructions for both tools can be found [here](https://kubernetes.io/do
 ### Automated Deployment Testing
 
 The script `kube_e2e.bash` uses Minikube to spin up a new temporary cluster,
-install the Ingress addon, configure the secret, deploy the necessary resources
-for the app, and validate the app starts successfully. It then destroys the
-created cluster to return to a clean slate (except as noted below).
+installs the Ingress addon for the cluster, configures the required secret with
+the API key, deploys the necessary resources for the app, and validates the app
+starts successfully, then destroys the created cluster to return to a clean
+slate (except as noted below).
 
 Note that Minikube will try to allocate 2 CPU cores and 2GB of RAM for the
 temporary cluster.
@@ -87,7 +91,7 @@ temporary cluster.
 bash kube_e2e.bash
 ```
 
-This script will prompt for your Alpha Vantage API key while running. You can
+The script will prompt for your Alpha Vantage API key while running. You can
 also provide it via the environment variable `APIKEY`.
 
 ```
@@ -112,10 +116,19 @@ set or manually with `minikube delete --profile=stock-quotes-e2e-test`.
 
 The Kubernetes configuration lives under deployment.yml.
 
-- Run `minikube start --addons ingress` if you don't already have a minikube cluster.
-- Run `minikube addons enable ingress` if you have a default minikube cluster and want to use it.
-- Create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
+- Run `minikube start --addons ingress` if you don't already have a minikube
+  cluster.
+- Run `minikube addons enable ingress` if you have a default minikube cluster
+  and want to use it.
+- Create your API key secret: 
+  `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
 - Deploy the resources using `kubectl apply -f deployment.yml`
-  - If you just spun up minikube, you might get an error like `Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s": context deadline exceeded`. In this case, the Ingress Controller probably isn't ready. Wait 30-60 seconds and re-run the apply.
-- Run `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/` to check the service connects. You might have to retry a few times to validate.
+  - If you just spun up minikube, you might get an error like `Internal error
+    occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io":
+    Post
+    "https://ingress-nginx-controller-admission.ingress-nginx.svc:443/networking/v1/ingresses?timeout=10s":
+    context deadline exceeded`. In this case, the Ingress Controller probably
+    isn't ready. Wait 30-60 seconds and re-run the apply.
+- Run `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/` to check the
+  service connects. You might have to retry a few times to validate.
 - Remove the created resources using `kubectl delete -f deployment.yml`

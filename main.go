@@ -1,3 +1,4 @@
+// Entrypoint for running the web service.
 package main
 
 import (
@@ -9,6 +10,8 @@ import (
 
 	"github.com/pushittoprod/stock-quotes/alphavantage"
 )
+
+// Handle arguments from environment variables.
 
 type EnvArgs struct {
 	BindAddr string
@@ -43,9 +46,11 @@ func init() {
 	args.Ndays = ndays
 }
 
+// API response construction
+
 type ApiResponse struct {
 	symbol  string
-	data    []float64 // in real code, I would not use float64 for currency
+	data    []float64 // TODO: don't use float64 for currency
 	average float64
 }
 

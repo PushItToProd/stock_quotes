@@ -1,7 +1,15 @@
+# I like capturing common commands with Make or Invoke (pyinvoke.org) to
+# streamline development.
+
+### Configuration variables ###
+
+# Export environment variables for use with `go run` and `go test`.
 export SYMBOL := MSFT
 export NDAYS := 7
-# replace with actual API key
 export APIKEY := demo
+
+
+### Commands for running and testing with Go ###
 
 default: test run
 
@@ -17,6 +25,13 @@ test:
 .PHONY: clean-test
 clean-test:
 	go clean -testcache
+
+
+### Commands for building and running with Docker ###
+
+# Using docker-compose here is probably redundant with K8s but I like how
+# Compose encapsulates the build/run/clean steps.
+
 .PHONY: docker-build
 docker-build:
 	docker-compose build

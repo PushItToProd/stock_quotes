@@ -1,3 +1,4 @@
+// A minimal wrapper for the Alphavantage API.
 package alphavantage
 
 import (
@@ -10,6 +11,7 @@ import (
 	"strconv"
 )
 
+// Load API key as config from the environment and validate it's set.
 var apikey = os.Getenv("APIKEY")
 
 func init() {
@@ -17,6 +19,8 @@ func init() {
 		panic("The APIKEY environment variable must be set")
 	}
 }
+
+// Structs for unmarshalling data from the Alpha Vantage API.
 
 type TimeSeriesEntry struct {
 	Open             string `json:"1. open"`

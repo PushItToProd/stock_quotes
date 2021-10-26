@@ -73,11 +73,12 @@ Deployment has been validated with minikube v1.23.2 and kubectl v1.22 on Pop_OS!
 
 Install instructions for both tools can be found [here](https://kubernetes.io/docs/tasks/tools/).
 
-### Deployment
+### Automated Deployment Testing
 
 The script `kube_e2e.bash` uses Minikube to spin up a new temporary cluster,
 install the Ingress addon, configure the secret, deploy the necessary resources
-for the app, and validate the app starts successfully.
+for the app, and validate the app starts successfully. It then destroys the
+created cluster to return to a clean slate (except as noted below).
 
 Note that Minikube will try to allocate 2 CPU cores and 2GB of RAM for the
 temporary cluster.
@@ -108,6 +109,8 @@ The cluster can be torn down by running the script again without `SKIP_CLEANUP`
 set or manually with `minikube delete --profile=stock-quotes-e2e-test`.
 
 ### Manual deployment steps
+
+The Kubernetes configuration lives under deployment.yml.
 
 - Run `minikube start --addons ingress` if you don't already have a minikube cluster.
 - Run `minikube addons enable ingress` if you have a default minikube cluster and want to use it.

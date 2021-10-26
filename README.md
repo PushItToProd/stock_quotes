@@ -75,9 +75,12 @@ Install instructions for both tools can be found [here](https://kubernetes.io/do
 
 ### Deployment
 
-The script `kube_e2e.bash` uses Minikube to spin up a new cluster, install the
-Ingress addon, configure the secret, deploy the necessary resources for the app,
-and validate the app starts successfully.
+The script `kube_e2e.bash` uses Minikube to spin up a new temporary cluster,
+install the Ingress addon, configure the secret, deploy the necessary resources
+for the app, and validate the app starts successfully.
+
+Note that Minikube will try to allocate 1 CPU core and 2GB of RAM for the
+temporary cluster.
 
 ```
 bash kube_e2e.bash

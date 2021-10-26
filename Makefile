@@ -12,3 +12,7 @@ run:
 .PHONY: test
 test:
 	go test -v ./alphavantage
+
+.PHONY: docker-build
+docker-build:
+	docker build --tag pushittoprod/stock-quotes .

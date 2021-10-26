@@ -1,5 +1,14 @@
 # Reference: https://www.digitalocean.com/community/tutorials/how-to-deploy-resilient-go-app-digitalocean-kubernetes
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stock-quotes-config
+data:
+  SYMBOL: MSFT
+  NDAYS: '7'
+  APIKEY: demo   # TODO: replace with a secret
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +29,9 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: stock-quotes-config
 ---
 apiVersion: v1
 kind: Service

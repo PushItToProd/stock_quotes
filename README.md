@@ -66,6 +66,7 @@ Kubernetes deployment
 - install minikube
 - `minikube start`
 - `minikube addons enable ingress`
+- create your API key secret: `kubectl create secret generic stock-quotes-secret --from-literal='APIKEY=YOUR API KEY'`
 - `make kube-apply`
 - wait for a bit
 - `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/`

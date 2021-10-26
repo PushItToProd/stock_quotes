@@ -8,7 +8,6 @@ metadata:
 data:
   SYMBOL: MSFT
   NDAYS: '7'
-  APIKEY: demo   # TODO: replace with a secret
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,6 +32,8 @@ spec:
         envFrom:
         - configMapRef:
             name: stock-quotes-config
+        - secretRef:
+            name: stock-quotes-secret
 ---
 apiVersion: v1
 kind: Service

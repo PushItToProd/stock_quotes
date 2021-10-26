@@ -34,30 +34,34 @@ type TimeSeriesDailyAdjusted struct {
 	TimeSeries map[string]TimeSeriesEntry `json:"Time Series (Daily)"`
 }
 
-func getTimeSeriesDailyAdjusted(symbol string) TimeSeriesDailyAdjusted {
+func getTimeSeriesDailyAdjusted(symbol string) (*TimeSeriesDailyAdjusted, error) {
 	url := fmt.Sprintf(
 		"https://www.alphavantage.co/query?apikey=%s&function=TIME_SERIES_DAILY_ADJUSTED&symbol=%s",
 		apikey, symbol,
 	)
 	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode >= 400 {
+		return nil, fmt.Errorf("got error response with status code %v: %v", resp.StatusCode, resp.Body)
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		panic("failed reading response body")
+		return nil, err
 	}
 
 	var data TimeSeriesDailyAdjusted
 	if err = json.Unmarshal(body, &data); err != nil {
-		panic(err)
+		return nil, err
 	}
-	return data
+	return &data, nil
 }
 
-func getClosingDataFromResponse(data TimeSeriesDailyAdjusted, ndays int) []float64 {
+func getClosingDataFromResponse(data *TimeSeriesDailyAdjusted, ndays int) ([]float64, error) {
 	timeseries := data.TimeSeries
 
 	// get the last ndays of dates
@@ -72,16 +76,24 @@ func getClosingDataFromResponse(data TimeSeriesDailyAdjusted, ndays int) []float
 	dateKeys = dateKeys[len(dateKeys)-ndays:]
 	closingData := make([]float64, ndays)
 	for i, date := range dateKeys {
-		close, err := strconv.ParseFloat(timeseries[date].Close, 64)
+		closeStr := timeseries[date].Close
+		close, err := strconv.ParseFloat(closeStr, 64)
 		if err != nil {
-			panic("Failed converting close value")
+			return nil, err
 		}
 		closingData[i] = close
 	}
-	return closingData
+	return closingData, nil
 }
 
-func GetClosingData(symbol string, ndays int) []float64 {
-	resp := getTimeSeriesDailyAdjusted(symbol)
-	return getClosingDataFromResponse(resp, ndays)
+func GetClosingData(symbol string, ndays int) ([]float64, error) {
+	resp, err := getTimeSeriesDailyAdjusted(symbol)
+	if err != nil {
+		return nil, err
+	}
+	data, err := getClosingDataFromResponse(resp, ndays)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

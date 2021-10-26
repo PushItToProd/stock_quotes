@@ -38,7 +38,7 @@ func init() {
 
 	ndays, err := strconv.Atoi(ndaysStr)
 	if err != nil {
-		panic("The NDAYS environment variable must be a valid integer")
+		log.Fatalf("The NDAYS environment variable must be a valid integer - got '%v' instead", ndaysStr)
 	}
 	args.Ndays = ndays
 }
@@ -49,17 +49,24 @@ type ApiResponse struct {
 	average float64
 }
 
-func createApiResponse(symbol string, ndays int) *ApiResponse {
-	data := alphavantage.GetClosingData(symbol, ndays)
+func createApiResponse(symbol string, ndays int) (*ApiResponse, error) {
+	data, err := alphavantage.GetClosingData(symbol, ndays)
+	if err != nil {
+		return nil, err
+	}
 	average := mean(data)
-	return &ApiResponse{
+	resp := &ApiResponse{
 		symbol:  symbol,
 		data:    data,
 		average: average,
 	}
+	return resp, nil
 }
 
 func mean(xs []float64) float64 {
+	if len(xs) == 0 {
+		panic("Can't take the mean of an empty slice")
+	}
 	sum := 0.0
 	for _, x := range xs {
 		sum += x
@@ -82,7 +89,13 @@ func main() {
 
 		log.Printf("%s %s", r.Method, r.URL.Path)
 
-		data := createApiResponse(args.Symbol, args.Ndays)
+		data, err := createApiResponse(args.Symbol, args.Ndays)
+		if err != nil {
+			w.WriteHeader(500)
+			fmt.Fprintf(w, "internal error")
+			log.Printf("Error getting upstream API response: %v", err)
+			return
+		}
 
 		fmt.Fprintf(w, "%s data=[%.2f", data.symbol, data.data[0])
 		for _, price := range data.data {

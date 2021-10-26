@@ -37,7 +37,7 @@ cleanup() {
     minikube delete --profile="$PROFILE"
   fi
 }
-trap cleanup INT EXIT
+trap cleanup EXIT
 
 if minikube --profile="$PROFILE" kubectl -- get secret stock-quotes-secret &>/dev/null; then
   echo "** Using existing secret"

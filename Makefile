@@ -13,6 +13,10 @@ run:
 test:
 	go test -v ./alphavantage
 
+# Force tests to run instead of using cached results.
+.PHONY: clean-test
+clean-test:
+	go clean -testcache
 .PHONY: docker-build
 docker-build:
 	docker-compose build

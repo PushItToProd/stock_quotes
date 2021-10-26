@@ -1,0 +1,35 @@
+# Reference: https://www.digitalocean.com/community/tutorials/how-to-deploy-resilient-go-app-digitalocean-kubernetes
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-quotes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: stock-quotes
+  template:
+    metadata:
+      labels:
+        name: stock-quotes
+    spec:
+      containers:
+      - name: application
+        image: ghcr.io/pushittoprod/stock_quotes
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stock-quotes
+spec:
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    name: stock-quotes

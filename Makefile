@@ -47,3 +47,14 @@ docker-down:
 .PHONY: docker-down-all
 docker-down-all:
 	docker-compose down --rmi all --volumes --remove-orphans
+
+
+### Commands for K8s ###
+
+.PHONY: kube-apply
+kube-apply:
+	kubectl apply -f deployment.yml
+
+.PHONY: kube-delete
+kube-delete:
+	kubectl delete -f deployment.yml

@@ -59,3 +59,13 @@ Run `make` to run the tests and start the app using Go.
   Docker.
 * `make docker-down` stops the Docker service and cleans up the image builds.
 * `make docker-down-all` stops the Docker service and cleans up the 
+
+Kubernetes deployment
+---------------------
+
+- install minikube
+- `minikube start`
+- `minikube addons enable ingress`
+- `make kube-apply`
+- wait for a bit
+- `curl -H 'Host: stock-quotes.get' http://$(minikube ip)/`

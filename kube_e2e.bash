@@ -44,13 +44,32 @@ else
   minikube --profile="$PROFILE" kubectl -- create secret generic stock-quotes-secret --from-literal="APIKEY=$APIKEY"
 fi
 
+# It takes some time for the Ingress controller to become usable, so we need to
+# wait a bit and potentially retry a few times before it'll work. Otherwise
+# we'll get an internal error about a failure to call the webhook
+# validate.nginx.ingress.kuberentes.io.
+sleep 10
 echo "** Running kubectl apply"
+apply_success=''
+for (( i=0; i<10; i++ )); do
+  if minikube --profile="$PROFILE" kubectl -- apply -f deployment.yml; then
+    apply_success=1
+    break
+  fi
+  echo "waiting to retry..."
+  sleep 30
+done
 
-minikube --profile="$PROFILE" kubectl -- apply -f deployment.yml
+if [[ ! "$apply_success" ]]; then
+  echo "error: kubectl apply failed after retries -- giving up" >&2
+  exit 1
+fi
 
 ip="$(minikube ip --profile="$PROFILE")"
 echo "** Found minikube IP: $ip"
 
+# It takes some time for the Ingress to get configured, so we potentially have
+# to retry a few times.
 echo "** Validating service connects"
 success=''
 for (( i=0; i<10; i++ )); do

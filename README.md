@@ -66,8 +66,8 @@ Run `make` to run the tests and start the app using Go.
 Kubernetes deployment with minikube
 -----------------------------------
 
-Deployment has been validated with minikube v1.23.2 and kubectl v1.22 on Pop_OS!
-20.04 LTS.
+Deployment has been validated with minikube v1.23.2, Kubernetes v1.22.2 and
+kubectl v1.22.2 on Pop_OS! 20.04 LTS.
 
 The Kubernetes configuration lives under `deployment.yml`. As described below,
 the secret `stock-quotes-secret` must be created for deployment to succeed.

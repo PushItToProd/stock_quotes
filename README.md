@@ -8,6 +8,9 @@ closing prices for a given stock, written in Go. Prices are retrieved from the
 Using the published image with Docker
 -------------------------------------
 
+The image is published automatically via the GitHub Action in
+`.github/workflows` when the `main` branch is pushed.
+
 Registry path: `ghcr.io/pushittoprod/stock_quotes`
 
 ```sh

@@ -1,4 +1,4 @@
-// A minimal wrapper for the Alphavantage API.
+// Package alphavantage provides a minimal wrapper for the Alphavantage API.
 package alphavantage
 
 import (
@@ -22,6 +22,7 @@ func init() {
 
 // Structs for unmarshalling data from the Alpha Vantage API.
 
+// TimeSeriesEntry represents a single time series entry for the "Time Series (Daily)" key of the API response.
 type TimeSeriesEntry struct {
 	Open             string `json:"1. open"`
 	High             string `json:"2. high"`
@@ -33,6 +34,7 @@ type TimeSeriesEntry struct {
 	SplitCoefficient string `json:"8. split coefficient"`
 }
 
+// TimeSeriesDailyAdjusted represents the API response for the TIME_SERIES_DAILY_ADJUSTED function.
 type TimeSeriesDailyAdjusted struct {
 	MetaData   map[string]string          `json:"Meta Data"`
 	TimeSeries map[string]TimeSeriesEntry `json:"Time Series (Daily)"`
@@ -90,6 +92,7 @@ func getClosingDataFromResponse(data *TimeSeriesDailyAdjusted, ndays int) ([]flo
 	return closingData, nil
 }
 
+// GetClosingData returns the last ndays of data for the symbol, with values converted to float64.
 func GetClosingData(symbol string, ndays int) ([]float64, error) {
 	resp, err := getTimeSeriesDailyAdjusted(symbol)
 	if err != nil {

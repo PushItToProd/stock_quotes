@@ -13,13 +13,13 @@ import (
 
 // Handle arguments from environment variables.
 
-type EnvArgs struct {
+type envArgs struct {
 	BindAddr string
 	Symbol   string
 	Ndays    int
 }
 
-var args EnvArgs
+var args envArgs
 
 func init() {
 	bindAddr := os.Getenv("BIND_ADDR")
@@ -48,19 +48,19 @@ func init() {
 
 // API response construction
 
-type ApiResponse struct {
+type apiResponse struct {
 	symbol  string
 	data    []float64 // TODO: don't use float64 for currency
 	average float64
 }
 
-func createApiResponse(symbol string, ndays int) (*ApiResponse, error) {
+func createAPIResponse(symbol string, ndays int) (*apiResponse, error) {
 	data, err := alphavantage.GetClosingData(symbol, ndays)
 	if err != nil {
 		return nil, err
 	}
 	average := mean(data)
-	resp := &ApiResponse{
+	resp := &apiResponse{
 		symbol:  symbol,
 		data:    data,
 		average: average,
@@ -94,7 +94,7 @@ func main() {
 
 		log.Printf("%s %s", r.Method, r.URL.Path)
 
-		data, err := createApiResponse(args.Symbol, args.Ndays)
+		data, err := createAPIResponse(args.Symbol, args.Ndays)
 		if err != nil {
 			w.WriteHeader(500)
 			fmt.Fprintf(w, "internal error")

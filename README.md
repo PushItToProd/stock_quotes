@@ -36,7 +36,8 @@ Development
 
 ### Pre-requisites
 
-* Go 1.17
+* Go 1.17 or higher
+* Golint (`go install golang.org/x/lint/golint@latest`)
 * GNU Make
 * Docker
 

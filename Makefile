@@ -11,14 +11,29 @@ export APIKEY := demo
 
 ### Commands for running and testing with Go ###
 
-default: test run
+default: check test run
+
+.PHONY: fmt
+fmt:
+	go fmt .
+
+.PHONY: lint
+lint: fmt
+	golint -set_exit_status ./...
+
+.PHONY: vet
+vet: fmt
+	go vet .
+
+.PHONY: check
+check: fmt lint vet
 
 .PHONY: run
-run:
+run: check
 	go run .
 
 .PHONY: test
-test:
+test: check
 	go test -v ./alphavantage
 
 # Force tests to run instead of using cached results.

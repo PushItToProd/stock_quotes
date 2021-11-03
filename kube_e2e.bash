@@ -115,8 +115,8 @@ main() {
       success=1
       break
     fi
-    echo "got unsuccessful status code $status - retrying in 30 seconds..."
-    sleep 30
+    echo "got unsuccessful status code $status - retrying in 10 seconds..."
+    sleep 10
   done
 
   if [[ ! "$success" ]]; then
